@@ -10,9 +10,10 @@ jobs:
   git-user:
     name: 'Setup the git user'
     runs-on: ubuntu-latest
-    run: |
-      git config --global user.name 'GitHub Action'
-      git config --global user.email 'github-action@users.noreply.github.com'
+    steps:
+      run: |
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'github-action@users.noreply.github.com'
 
   run-tests:
     name: 'Test: ${{ matrix.config.name }} ${{ matrix.submodule_config.output }} '
