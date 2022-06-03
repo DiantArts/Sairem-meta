@@ -8,7 +8,7 @@ on:
 
 jobs:
   git-user:
-    name: 'Creates the release branch if needed'
+    name: 'Setup git user'
     runs-on: ubuntu-latest
     steps:
       - name: 'Setup git user.name'
@@ -17,6 +17,9 @@ jobs:
       - name: 'Setup git user.email'
         run: |
           git config --global user.email 'github-action@users.noreply.github.com'
+      - name: 'Setup git default branch'
+        run: |
+          git config --global init.defaultBranch main
 
   run-tests:
     name: 'Test: ${{ matrix.config.name }} ${{ matrix.submodule_config.output }} '
