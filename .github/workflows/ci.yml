@@ -114,5 +114,5 @@ jobs:
 
       - name: 'switch to the release/${{ env.NEXT_GIT_TAG }} branch'
         run: |
-            git checkout -B release/${{ env.NEXT_GIT_TAG }}
-            git push origin release/${{ env.NEXT_GIT_TAG }}
+            git branch release/${{ env.NEXT_GIT_TAG }}
+            git push origin main:release/${{ env.NEXT_GIT_TAG }}
