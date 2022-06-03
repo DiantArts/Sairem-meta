@@ -11,10 +11,10 @@ jobs:
     name: 'Creates the release branch if needed'
     runs-on: ubuntu-latest
     steps:
-      name: 'Setup git user.name'
+      - name: 'Setup git user.name'
         run: |
           git config --global user.name 'GitHub Action'
-      name: 'Setup git user.email'
+      - name: 'Setup git user.email'
         run: |
           git config --global user.email 'github-action@users.noreply.github.com'
 
