@@ -1,0 +1,17 @@
+.build*
+.obj*
+.dep*
+.vscode*
+*.pdf
+*.o
+*.d
+*.hpp.gch
+*.log.*
+*.log
+#*#
+*~
+binaries*
+.doxygenOutput
+_*
+cccontrolReminder
+TODO

@@ -1,0 +1,6 @@
+[submodule "Sairem-ces356"]
+	path = Sairem-ces356
+	url = git@github.com:DiantArts/Sairem-ces356.git
+[submodule "Sairem-ces362"]
+	path = Sairem-ces362
+	url = git@github.com:DiantArts/Sairem-ces362.git

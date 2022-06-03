@@ -1,0 +1,101 @@
+name: Continous integration
+
+on:
+  push:
+    branches:
+      - main
+      - release/v*.*.*
+
+jobs:
+  run-tests:
+    name: 'Test: ${{ matrix.config.name }} ${{ matrix.submodule_config.output }} '
+    runs-on: ${{ matrix.config.os }}
+    if: false
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type:
+          - Release
+          - Debug
+        submodule_config:
+          - {
+              dirname: 'Sairem-ces356',
+              script_command: compile.sh,
+              output: ces356
+          }
+          - {
+              dirname: 'Sairem-ces362',
+              script_command: compile.sh,
+              output: ces362
+          }
+        config:
+          - {
+            name: 'desktop-build',
+            os: ubuntu-latest,
+            cxx: 'g++-11'
+          }
+          - {
+            name: 'bsp-build',
+            os: ubuntu-latest,
+            cxx: 'path/to/custom/armadeus/bsp'
+          }
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        token: ${{ secrets.PERMISSION_KEY }}
+    - name: 'Create the ${{ matrix.submodule_config.bin }} dummy binaries'
+      working-directory: '${{ github.workspace }}/${{ matrix.submodule_config.dirname }}'
+      run: |
+        ./${{ matrix.submodule_config.script_command }}
+    - name: 'Check if the binary has been created successfully'
+      working-directory: '${{ github.workspace }}/${{ matrix.submodule_config.dirname }}'
+      run: |
+        mv ./${{ matrix.submodule_config.output }} ./dummy
+        rm -f ./dummy
+
+  release-branch:
+    name: 'Creates the release branch if needed'
+    if: ${{ (
+            contains(github.event.head_commit.message, '[major]') ||
+            contains(github.event.head_commit.message, '[minor]') ||
+            contains(github.event.head_commit.message, '[patch]')
+        ) && (
+            github.ref == 'refs/heads/main'
+        ) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.PERMISSION_KEY }}
+          ref: releases
+
+      - name: 'Get latest tag'
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        id: version-tag
+        with:
+          initial_version: 'v0.0.0'
+      - name: 'Increment major version number'
+        if: ${{
+                contains(github.event.head_commit.message, '[major]')
+            }}
+        run: echo NEXT_GIT_TAG=`echo ${{ steps.version-tag.outputs.tag }} | perl -pe 's/(\d+).(\d+).(\d+)/($1+1) . ".0.0"/e'` >> $GITHUB_ENV
+      - name: 'Increment minor version number'
+        if: ${{
+                contains(github.event.head_commit.message, '[minor]')
+            }}
+        run: echo NEXT_GIT_TAG=`echo ${{ steps.version-tag.outputs.tag }} | perl -pe 's/(\d+).(\d+).(\d+)/($1) . "." . ($2+1) . ".0"/e'` >> $GITHUB_ENV
+      - name: 'Increment patch version number'
+        if: ${{
+                contains(github.event.head_commit.message, '[patch]')
+            }}
+        run: echo NEXT_GIT_TAG=`echo ${{ steps.version-tag.outputs.tag }} | perl -pe 's/(\d+).(\d+).(\d+)/($1) . "." . ($2) . "." . ($3+1)/e'` >> $GITHUB_ENV
+
+      - name: 'switch to the release/${{ env.NEXT_GIT_TAG }} branch'
+        run: |
+            git branch release/${{ env.NEXT_GIT_TAG }} main
+            git push origin main:release/${{ env.NEXT_GIT_TAG }}

@@ -1,0 +1,42 @@
+name: Automatic pull requests openning
+
+on:
+  create
+
+jobs:
+  release-branch:
+    name: 'Creates the release branch if needed'
+    if: startsWith(github.ref, 'refs/heads/release/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.PERMISSION_KEY }}
+          ref: ${{ github.ref }}
+
+      - name: 'Extract branch name'
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: 'Extract version number'
+        run: |
+            str="${{ steps.extract_branch.outputs.branch }}"
+            echo "##[set-output name=number;]$(echo ${str:8})"
+        id: extract_version
+
+      - name: 'Debug'
+        run: git rev-parse --abbrev-ref HEAD
+
+      - uses: repo-sync/pull-request@v2
+        name: 'Pull-request ${{ steps.extract_branch.outputs.branch }}'
+        with:
+          source_branch: 'release/${{ steps.extract_version.outputs.number }}'
+          destination_branch: 'releases'
+          pr_title: '[Release][${{ steps.extract_version.outputs.number }}]'
+          pr_body: '${{ github.event.head_commit.message }}'
+          pr_draft: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}

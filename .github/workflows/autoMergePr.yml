@@ -1,0 +1,38 @@
+name: Automatic pull request merge
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  merge-pull-request:
+    name: 'Merge the approved pull request'
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions-ecosystem/action-add-labels@v1
+        name: 'Add automerge label so it can be merged by the CI'
+        with:
+          labels: automerge
+      - id: automerge
+        uses: pascalgn/automerge-action@v0.15.3
+        name: 'Merge pull request'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.PERMISSION_KEY }}
+          ref: releases
+
+      - name: 'set git tag and delete old branch'
+        run: |
+          tag=${{ github.event.pull_request.title }}
+          tag=${tag:10:-1}
+          git tag ${tag}
+          git push origin ${tag}
+          git push origin :release/${tag}
