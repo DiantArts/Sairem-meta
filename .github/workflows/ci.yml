@@ -59,6 +59,7 @@ jobs:
       with:
         submodules: true
         token: ${{ secrets.PERMISSION_KEY }}
+          ref: main
     - name: 'Create the ${{ matrix.submodule_config.bin }} dummy binaries'
       working-directory: '${{ github.workspace }}/${{ matrix.submodule_config.dirname }}'
       run: |
