@@ -22,6 +22,7 @@ jobs:
     name: 'Test: ${{ matrix.config.name }} ${{ matrix.submodule_config.output }} '
     runs-on: ${{ matrix.config.os }}
     if: false
+    needs: git-user
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +75,7 @@ jobs:
         ) && (
             github.ref == 'refs/heads/main'
         ) }}
+    needs: git-user
     runs-on: ubuntu-latest
     permissions:
       contents: write
