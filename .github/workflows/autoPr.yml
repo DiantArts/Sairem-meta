@@ -31,13 +31,11 @@ jobs:
       - name: 'Debug'
         run: |
           git rev-parse --abbrev-ref HEAD
-          echo '[${{ steps.extract_version.outputs.number }}]'
-          echo '[${{ steps.extract_branch.outputs.branch }}]'
 
       - uses: repo-sync/pull-request@v2
         name: 'Pull-request ${{ steps.extract_branch.outputs.branch }}'
         with:
-          destination_branch: 'main'
+          destination_branch: 'releases'
           pr_title: '[Release][${{ steps.extract_version.outputs.number }}]'
           pr_body: '${{ github.event.head_commit.message }}'
           pr_draft: false
