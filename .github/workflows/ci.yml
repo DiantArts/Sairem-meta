@@ -117,3 +117,4 @@ jobs:
           git show-ref
           git branch release/${{ env.NEXT_GIT_TAG }}
           git push origin release/${{ env.NEXT_GIT_TAG }}
+
