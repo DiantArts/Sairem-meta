@@ -29,12 +29,13 @@ jobs:
         id: extract_version
 
       - name: 'Debug'
-        run: git rev-parse --abbrev-ref HEAD
+        run: |
+          git rev-parse --abbrev-ref HEAD
+          echo [${{ steps.extract_version.outputs.number }}]
 
       - uses: repo-sync/pull-request@v2
         name: 'Pull-request ${{ steps.extract_branch.outputs.branch }}'
         with:
-            # source_branch: 'release/${{ steps.extract_version.outputs.number }}'
           destination_branch: 'releases'
           pr_title: '[Release][${{ steps.extract_version.outputs.number }}]'
           pr_body: '${{ github.event.head_commit.message }}'
