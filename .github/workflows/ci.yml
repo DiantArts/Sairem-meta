@@ -115,7 +115,7 @@ jobs:
       - name: 'switch to the release/${{ env.NEXT_GIT_TAG }} branch'
         run: |
           git show-ref
-          git switch ${{ github.ref }}
+          git switch main
           git branch release/${{ env.NEXT_GIT_TAG }}
           git push origin release/${{ env.NEXT_GIT_TAG }}
 
