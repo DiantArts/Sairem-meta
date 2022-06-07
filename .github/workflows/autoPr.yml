@@ -24,15 +24,15 @@ jobs:
 
       - name: 'Extract version number'
         run: |
-            str="${{ steps.extract_branch.outputs.branch }}"
-            echo "##[set-output name=number;]$(echo ${str:8})"
+          str="${{ steps.extract_branch.outputs.branch }}"
+          echo "##[set-output name=number;]$(echo ${str:8})"
         id: extract_version
 
       - name: 'Debug'
         run: |
           git rev-parse --abbrev-ref HEAD
-          echo [${{ steps.extract_version.outputs.number }}]
-          echo [${{ steps.extract_branch.outputs.branch }}]
+          echo '[${{ steps.extract_version.outputs.number }}]'
+          echo '[${{ steps.extract_branch.outputs.branch }}]'
 
       - uses: repo-sync/pull-request@v2
         name: 'Pull-request ${{ steps.extract_branch.outputs.branch }}'
