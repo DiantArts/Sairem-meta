@@ -30,7 +30,6 @@ jobs:
 
       - name: 'Debug'
         run: |
-            # git switch main
           git rev-parse --abbrev-ref HEAD
           echo [${{ steps.extract_version.outputs.number }}]
           echo [${{ steps.extract_branch.outputs.branch }}]
